@@ -15,8 +15,8 @@ fn panic(info: &PanicInfo) -> ! {
 pub extern "C" fn _start() -> ! {
     use core::fmt::Write;
     // vga_buffer::WRITER.lock().write_str("Hello again").unwrap();
-    write!(vga_buffer::WRITER.lock(), "CYY What are you doing?").unwrap();
-    write!(vga_buffer::WRITER.lock(), "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n").unwrap();
+    write!(vga_buffer::WRITER.lock(), "Welcome to RSOS!").unwrap();
+    write!(vga_buffer::WRITER.lock(), "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n").unwrap();
     
     // panic!("Some panic message");
     loop {}
