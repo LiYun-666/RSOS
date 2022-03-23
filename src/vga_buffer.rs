@@ -1,3 +1,11 @@
+/*
+ * @file    vga_buffer.rs
+ * @author  黎酝
+ * @brief   VGA 字符模式，向屏幕打印字符
+ */
+
+/// 枚举颜色，4 位比特就能表示，但是只有 u8 类型
+
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
@@ -20,6 +28,8 @@ pub enum Color {
     White = 15,
 }
 
+/// 前景色 & 背景色，8 位比特
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(transparent)]
 struct ColorCode(u8);
@@ -29,6 +39,8 @@ impl ColorCode {
         ColorCode((background as u8) << 4 | (foreground as u8))
     }
 }
+
+/// 屏幕字符，一个字符对应 16 个比特
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
@@ -40,6 +52,7 @@ struct ScreenChar {
 const BUFFER_HEIGHT: usize = 25;
 const BUFFER_WIDTH: usize = 80;
 
+/// 字符缓冲区
 
 use volatile::Volatile;
 #[repr(transparent)]
@@ -47,11 +60,16 @@ struct Buffer {
     chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT],
 }
 
+/// Writer 类
+/// 用于向屏幕写字符
+
 pub struct Writer {
+    row_position: usize,
     column_position: usize,
     color_code: ColorCode,
     buffer: &'static mut Buffer,
 }
+
 impl Writer {
     pub fn write_byte(&mut self, byte: u8) {
         match byte {
@@ -61,11 +79,9 @@ impl Writer {
                     self.new_line();
                 }
 
-                let row = BUFFER_HEIGHT - 1;
+                let row = self.row_position;
                 let col = self.column_position;
-
                 let color_code = self.color_code;
-
                 self.buffer.chars[row][col].write(ScreenChar {
                     ascii_character: byte,
                     color_code: color_code,
@@ -84,15 +100,21 @@ impl Writer {
             }
         }
     }
-    fn new_line(&mut self) { 
-        for row in 1..BUFFER_HEIGHT {
-            for col in 0..BUFFER_WIDTH {
-                let character = self.buffer.chars[row][col].read();
-                self.buffer.chars[row - 1][col].write(character);
+    fn new_line(&mut self) {
+        if self.row_position >= BUFFER_HEIGHT {
+            for row in 1..BUFFER_HEIGHT {
+                for col in 0..BUFFER_WIDTH {
+                    let character = self.buffer.chars[row][col].read();
+                    self.buffer.chars[row - 1][col].write(character);
+                }
             }
+            self.clear_row(BUFFER_HEIGHT - 1);
+            self.column_position = 0;
         }
-        self.clear_row(BUFFER_HEIGHT - 1);
-        self.column_position = 0;
+        else {
+            self.row_position = self.row_position + 1;
+            self.column_position = 0;
+        }
     }
     fn clear_row(&mut self, row: usize) {
         let blank = ScreenChar {
@@ -105,21 +127,9 @@ impl Writer {
     }
 }
 
-pub fn print_something() {
-    use core::fmt::Write;
-    let mut writer = Writer {
-        column_position: 0,
-        color_code: ColorCode::new(Color::Yellow, Color::Black),
-        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
-    };
-
-    writer.write_byte(b'H');
-    writer.write_string("ello! ");
-    write!(writer, "The numbers are {} and {}", 42, 1.0/3.0).unwrap();
-}
+/// 为 Writer 实现 write! 和 writeln! 宏
 
 use core::fmt;
-
 impl fmt::Write for Writer {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         self.write_string(s);
@@ -127,16 +137,20 @@ impl fmt::Write for Writer {
     }
 }
 
-use spin::Mutex;
+/// 定义静态变量 WRITER
+
 use lazy_static::lazy_static;
+use spin::Mutex;
 lazy_static! {
     pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
+        row_position: 0,
         column_position: 0,
         color_code: ColorCode::new(Color::Yellow, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
     });
 }
 
+/// 实现自定义的 println! 宏
 
 #[macro_export]
 macro_rules! print {
