@@ -13,7 +13,7 @@ fn panic(info: &PanicInfo) -> ! {
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     use core::fmt::Write;
-    println!("Welcome to RSOS.");   
+    println!("Welcome to RSOS.");
 
     loop {}
 }
