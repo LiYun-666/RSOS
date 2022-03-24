@@ -1,3 +1,9 @@
+/*
+ * @file    serial.rs
+ * @author  黎酝
+ * @brief   串口输出，将输出至 qemu 的信息重定向至控制台
+ */
+
 use lazy_static::lazy_static;
 use spin::Mutex;
 use uart_16550::SerialPort;

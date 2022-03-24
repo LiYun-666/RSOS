@@ -1,3 +1,9 @@
+/*
+ * @file    lib.rs
+ * @author  黎酝
+ * @brief   测试 bootloader
+ */
+
 #![no_std]
 #![no_main]
 #![feature(custom_test_frameworks)]

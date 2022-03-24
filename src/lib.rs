@@ -1,3 +1,9 @@
+/*
+ * @file    lib.rs
+ * @author  黎酝
+ * @brief   库
+ */
+
 #![no_std]
 #![cfg_attr(test, no_main)]
 #![feature(custom_test_frameworks)]

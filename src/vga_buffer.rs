@@ -126,6 +126,7 @@ impl Writer {
 }
 
 /// 为 Writer 实现 write! 和 writeln! 宏
+
 use core::fmt;
 impl fmt::Write for Writer {
     fn write_str(&mut self, s: &str) -> fmt::Result {
@@ -135,6 +136,7 @@ impl fmt::Write for Writer {
 }
 
 /// 定义静态变量 WRITER
+
 use lazy_static::lazy_static;
 use spin::Mutex;
 lazy_static! {

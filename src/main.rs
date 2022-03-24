@@ -1,3 +1,9 @@
+/*
+ * @file    main.rs
+ * @author  黎酝
+ * @brief   main 程序
+ */
+
 #![no_std]
 #![no_main]
 #![reexport_test_harness_main = "test_main"]

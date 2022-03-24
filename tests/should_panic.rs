@@ -1,3 +1,9 @@
+/*
+ * @file    should_panic.rs
+ * @author  黎酝
+ * @brief   测试文件
+ */
+
 #![no_std]
 #![no_main]
 
