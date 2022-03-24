@@ -53,7 +53,6 @@ const BUFFER_HEIGHT: usize = 25;
 const BUFFER_WIDTH: usize = 80;
 
 /// 字符缓冲区
-
 use volatile::Volatile;
 #[repr(transparent)]
 struct Buffer {
@@ -101,7 +100,7 @@ impl Writer {
         }
     }
     fn new_line(&mut self) {
-        if self.row_position >= BUFFER_HEIGHT {
+        if self.row_position == BUFFER_HEIGHT - 1 {
             for row in 1..BUFFER_HEIGHT {
                 for col in 0..BUFFER_WIDTH {
                     let character = self.buffer.chars[row][col].read();
@@ -110,8 +109,7 @@ impl Writer {
             }
             self.clear_row(BUFFER_HEIGHT - 1);
             self.column_position = 0;
-        }
-        else {
+        } else {
             self.row_position = self.row_position + 1;
             self.column_position = 0;
         }
@@ -128,7 +126,6 @@ impl Writer {
 }
 
 /// 为 Writer 实现 write! 和 writeln! 宏
-
 use core::fmt;
 impl fmt::Write for Writer {
     fn write_str(&mut self, s: &str) -> fmt::Result {
@@ -138,7 +135,6 @@ impl fmt::Write for Writer {
 }
 
 /// 定义静态变量 WRITER
-
 use lazy_static::lazy_static;
 use spin::Mutex;
 lazy_static! {
