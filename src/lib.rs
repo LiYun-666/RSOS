@@ -28,8 +28,9 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     loop {}
 }
 
-/// 中断
+/// 初始化
 pub fn init() {
+    gdt::init();
     interrupts::init_idt();
 }
 
@@ -47,6 +48,8 @@ pub extern "C" fn _start() -> ! {
 fn panic(info: &PanicInfo) -> ! {
     test_panic_handler(info)
 }
+
+/// 退出 qemu
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
@@ -68,3 +71,4 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
 pub mod serial;
 pub mod vga_buffer;
 pub mod interrupts;
+pub mod gdt;
