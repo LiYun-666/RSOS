@@ -32,6 +32,8 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
 pub fn init() {
     gdt::init();
     interrupts::init_idt();
+    unsafe { interrupts::PICS.lock().initialize() };
+    x86_64::instructions::interrupts::enable();
 }
 
 /// Entry point for `cargo xtest`
@@ -67,8 +69,7 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
     }
 }
 
-
+pub mod gdt;
+pub mod interrupts;
 pub mod serial;
 pub mod vga_buffer;
-pub mod interrupts;
-pub mod gdt;

@@ -15,13 +15,7 @@ use RSOS::println;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-
     RSOS::init();
-
-    // trigger a page fault
-    unsafe {
-        *(0xdeadbeef as *mut u64) = 42;
-    };
 
     #[cfg(test)]
     test_main();
@@ -41,4 +35,3 @@ fn panic(info: &PanicInfo) -> ! {
 fn panic(info: &PanicInfo) -> ! {
     RSOS::test_panic_handler(info)
 }
-

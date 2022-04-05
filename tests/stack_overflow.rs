@@ -1,4 +1,3 @@
-
 #![feature(abi_x86_interrupt)]
 #![no_std]
 #![no_main]
@@ -31,7 +30,6 @@ fn panic(info: &PanicInfo) -> ! {
     RSOS::test_panic_handler(info)
 }
 
-
 use lazy_static::lazy_static;
 use x86_64::structures::idt::InterruptDescriptorTable;
 
@@ -52,8 +50,8 @@ pub fn init_test_idt() {
     TEST_IDT.load();
 }
 
-use RSOS::{exit_qemu, QemuExitCode, serial_println};
 use x86_64::structures::idt::InterruptStackFrame;
+use RSOS::{exit_qemu, serial_println, QemuExitCode};
 
 extern "x86-interrupt" fn test_double_fault_handler(
     _stack_frame: InterruptStackFrame,
